@@ -15,21 +15,21 @@ type User struct {
 }
 
 var (
-	client *mongo.Client
+	mongoClient *mongo.Client
 	collection *mongo.Collection
 )
 
 func connect() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
-	err = client.Ping(ctx, nil)
+	err = mongoClient.Ping(ctx, nil)
 
 	if err != nil {
 		log.Fatal(err)
 	} else {
 		log.Println("Connect DB success")
-		collection = client.Database("hay").Collection("users")
+		collection = mongoClient.Database("hay").Collection("users")
 	}
 }
 
@@ -81,8 +81,7 @@ func deleteOne() {
 	}
 }
 
-func init() {
-	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
+func runMongoDB() {
 	connect()
 	findOne()
 	deleteOne()
