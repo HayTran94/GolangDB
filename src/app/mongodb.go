@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 	"log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,10 +19,8 @@ var (
 )
 
 func connect() {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
-	err = mongoClient.Ping(ctx, nil)
+	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
+	err = mongoClient.Ping(context.TODO(), nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -34,10 +31,9 @@ func connect() {
 }
 
 func findOne() {
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	filter := bson.M{"name": "Hay Tran"}
 	var result User 
-	err := collection.FindOne(ctx, filter).Decode(&result)
+	err := collection.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -46,9 +42,8 @@ func findOne() {
 }
 
 func insertOne(){
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	newUser := User{Name: "Nhung", Age: 25}
-	insertResult, err := collection.InsertOne(ctx, newUser)
+	insertResult, err := collection.InsertOne(context.TODO(), newUser)
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -67,7 +62,7 @@ func updateOne() {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		log.Println("Matched %v documents and updated %v documents.", updateResult.MatchedCount, updateResult.ModifiedCount)
+		log.Printf("Matched %v documents and updated %v documents.\n", updateResult.MatchedCount, updateResult.ModifiedCount)
 	}
 }
 
@@ -77,7 +72,7 @@ func deleteOne() {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		log.Println("Deleted %v ", filter)
+		log.Printf("Deleted %v \n", filter)
 	}
 }
 
